@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AdminPanel</title>
+    <link rel="icon" href="images/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="AdminPage/AdminPage.css">
+</head>
+<body>
+    <main>
+        <div class="main-container">
+            <div class="background-container">
+                <picture class="background-picture">
+                    <source media="(max-width: 1024px) and (orientation: portrait)" srcset="AdminPage/backimage.jpg">
+                    <source media="orientation: portrait" srcset="AdminPage/backimage.jpg">
+                    <img src="AdminPage/backimage.jpg" class="setting-img">
+                </picture>
+                <div class="shadow-on-page"></div>
+                <div class="shadow-on-page-bottom"></div>
+            </div>
+            <div class="wrapper-container">
+                <h1 class="tittle-Table">
+                    Premier Admin Panel
+                </h1>
+                <div>
+                    <div class="wrapper-form">
+                        <div class="Panel-inputWrapper">
+                            <input type="text" id="title" name="title" class="Panel_input" value="" placeholder="Название фильма">
+                            <label class="Panel_label"></label>
+                        </div>
+                        <div class="Panel-inputWrapper">
+                            <input type="text" name="description" class="Panel_input" value="" placeholder="Описание">
+                            <label class="Panel_label"></label>
+                        </div>
+                        <div class="Panel-inputWrapper">
+                            <input type="text" name="year" class="Panel_input" value="" placeholder="Год">
+                            <label class="Panel_label"></label>
+                        </div>
+                        <div class="Panel-inputWrapper">
+                            <input type="text" name="rating" class="Panel_input" value="" placeholder="Ограничение по возрасту">
+                            <label class="Panel_label"></label>
+                        </div>
+                        <div class="Panel-inputWrapper">
+                            <input type="text" name="posterUrl" class="Panel_input" value="" placeholder="Ссылка на постер">
+                            <label class="Panel_label"></label>
+                        </div>
+                        <div class="Panel-inputWrapper">
+                            <input type="text" name="bgUrl" class="Panel_input" value="" placeholder="Ссылка на лого">
+                            <label class="Panel_label"></label>
+                        </div>
+                        <div class="Panel-inputWrapper">
+                            <input type="text" name="genres" class="Panel_input" value="" placeholder="Жанр">
+                            <label class="Panel_label"></label>
+                        </div>
+                        <div class="Panel-inputWrapper">
+                            <input type="text" name="country" class="Panel_input" value="" placeholder="Страна">
+                            <label class="Panel_label"></label>
+                        </div>
+                    </div>
+                    <div style="position: relative; align-items: center; justify-content: space-between; margin-top: 22px; width: 100%">
+                        <form id="actionForm" >
+                            <input type="hidden"  id="methodField">
+                            <button type="button" class="template-button" style="margin-right: 26%; margin-left: 20%" onclick="addMovie()">
+                                Добавить
+                            </button>
+                            <button type="button" class="template-button" style="margin-right: 20%" onclick="removeMovie()">
+                                Удалить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        function addMovie() {
+            // Получаем все поля ввода
+            const title = document.getElementById('title').value;
+            const description = document.querySelector('input[name="description"]').value;
+            const year = document.querySelector('input[name="year"]').value;
+            const rating = document.querySelector('input[name="rating"]').value;
+            const posterUrl = document.querySelector('input[name="posterUrl"]').value;
+            const bgUrl = document.querySelector('input[name="bgUrl"]').value;
+            const genres = document.querySelector('input[name="genres"]').value;
+            const country = document.querySelector('input[name="country"]').value;
+
+            // Проверяем, что все поля заполнены
+            if (!title || !description || !year || !rating || !posterUrl || !bgUrl || !genres || !country) {
+                alert("Пожалуйста, заполните все поля для добавления фильма.");
+                return; // Прерываем выполнение, если какое-то поле не заполнено
+            }
+
+            // Создаем объект с данными фильма
+            const movieData = {
+                title: title,
+                description: description,
+                year: year,
+                rating: rating,
+                posterUrl: posterUrl,
+                bgUrl: bgUrl,
+                genres: genres,
+                country: country
+            };
+
+            sendData(movieData, 'POST')
+        }
+
+        function removeMovie() {
+            // Получаем только название фильма для удаления
+            const title = document.getElementById('title').value;
+
+            if (!title) {
+                alert("Пожалуйста, введите название фильма для удаления.");
+                return; // Прерываем выполнение, если название не введено
+            }
+
+            sendData({ title: title }, 'DELETE')
+
+        }
+        async function sendData(data, method) {
+            const methodField = document.getElementById('methodField');
+            methodField.value = method;
+
+            try {
+                const response = await fetch(document.getElementById('actionForm').action, {
+                    method: 'POST', // Используем POST, так как мы отправляем данные в теле запроса
+                    headers: {
+                        'Content-Type': 'application/json',
+                         'X-HTTP-Method-Override': method // Передаем реальный метод в заголовке
+                    },
+                    body: JSON.stringify(data) // Преобразуем данные в JSON
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Успешно:', result);
+                    alert("Успешно!")
+                    // Добавьте логику для обработки успешного ответа от сервера
+                    // Например, обновление списка фильмов или сообщение об успехе
+                } else {
+                    console.error('Ошибка при отправке данных:', response.status, response.statusText);
+                    alert("Произошла ошибка при отправке данных!")
+                    // Добавьте логику для обработки ошибки от сервера
+                    // Например, вывод сообщения об ошибке пользователю
+                }
+            } catch (error) {
+                console.error('Ошибка при отправке запроса:', error);
+                alert("Произошла ошибка при отправке запроса!")
+                // Добавьте логику для обработки ошибок на стороне клиента
+            }
+        }
+    </script>
+</body >
+</html >

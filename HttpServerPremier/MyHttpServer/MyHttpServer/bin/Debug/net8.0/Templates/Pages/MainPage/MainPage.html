@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Premier</title>
+    <link rel="stylesheet" href="MainPage/MainPage.css">
+</head>
+<body>
+<header class = "header">
+    <div class = "header-content">
+        <img class= "header-content-logo" src="MainPage/images/LOGO_PREMIER.png">
+        <button class="header-content-catalog">
+            Каталог</button>
+        <div class ="header-content-search"> Поиск</div>
+        <div class ="header-content-list">
+            <button class = "header-content-buttons">
+                Подписки
+            </button>
+            <button class = "header-content-buttons" >
+                ТВ-каналы
+            </button>
+            <button class = "header-content-buttons" >
+                Марафон
+            </button>
+            <button class = "header-content-buttons" >
+                Детям
+            </button>
+            <button class = "header-content-buttons" >
+                Бесплатно
+            </button>
+            <button class = "header-content-buttons" >
+                Избранное
+            </button>
+        </div>
+        <a href="login"> <button class = "header-content-auth" > Войти </button> </a>
+    </div>
+</header>
+<main class="container">
+    <div class="container-header">
+        <h1 class="container-header-text">Сериалы смотреть онлайн</h1>
+    </div>
+    <div class="filter">
+        <div class="filter-content">
+            <button class="filter-content-buttons"> Зарубежные сериалы </button>
+            <button class="filter-content-buttons"> Российские сериалы </button>
+            <button class="filter-content-buttons"> Сериалы 2024 </button>
+            <button class="filter-content-buttons"> Сериалы 2023 </button>
+            <button class="filter-content-buttons"> Сериалы 2022 </button>
+        </div>
+        <div class="filter-content-windows">
+            <div class="filter-container">
+                <button class="filter-content-select" data-filter="genre">
+                    <div class="filter-content-select-name">Жанр</div>
+                </button>
+                <div class="filter-dropdown" data-dropdown="genre">
+                    <a href="#">Мелодрама</a>
+                    <a href="#">Детектив</a>
+                    <a href="#">Драма</a>
+                    <a href="#">Комедия</a>
+                    <a href="#">Мультфильм</a>
+                </div>
+            </div>
+            <div class="filter-container">
+                <button class="filter-content-select" data-filter="year">
+                    <div class="filter-content-select-name">Год</div>
+                </button>
+                <div class="filter-dropdown" data-dropdown="year">
+                    <a href="#">1976</a>
+                    <a href="#">2004</a>
+                    <a href="#">2021</a>
+                    <a href="#">2023</a>
+                    <a href="#">2022</a>
+                    <a href="#">2024</a>
+                </div>
+            </div>
+            <div class="filter-container">
+                <button class="filter-content-select" data-filter="country">
+                    <div class="filter-content-select-name">Страна</div>
+                </button>
+                <div class="filter-dropdown" data-dropdown="country">
+                    <a href="#">Израиль</a>
+                    <a href="#">Канада</a>
+                    <a href="#">Турция</a>
+                    <a href="#">Россия</a>
+                    <a href="#">СССР</a>
+                </div>
+            </div>
+            <div class="filter-container">
+                <button class="filter-content-select" data-filter="plot">
+                    <div class="filter-content-select-name">Сюжеты</div>
+                </button>
+                <div class="filter-dropdown" data-dropdown="plot">
+                    <a href="#">Любовь</a>
+                    <a href="#">Маньяки</a>
+                    <a href="#">Семья</a>
+                    <a href="#">Политика</a>
+                    <a href="#">Дети</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="gap"></div>
+    <div class="content" id="content">
+    </div>
+</main>
+<footer class = "footer">
+    <div class = "footer-items">
+        <ul class= "footer-section">
+            <li class = "footer-section-item" style="font-weight: bold" > Разделы</li>
+            <li class = "footer-section-item"> Подписки</li>
+            <li class = "footer-section-item"> ТВ-каналы</li>
+            <li class = "footer-section-item"> Марафон</li>
+            <li class = "footer-section-item"> Детям</li>
+            <li class = "footer-section-item"> Бесплатно</li>
+            <li class = "footer-section-item"> Избранное</li>
+        </ul>
+        <ul class= "footer-section">
+            <li class = "footer-section-item" style="font-weight: bold" > Информация</li>
+            <li class = "footer-section-item"> Пользовательское соглашение</li>
+            <li class = "footer-section-item"> Политика конфиденциальности</li>
+            <li class = "footer-section-item"> Частые вопросы</li>
+            <li class = "footer-section-item"> Акции и предложения</li>
+            <li class = "footer-section-item"> Купить сертификат</li>
+        </ul>
+        <img class="footer-image" src="MainPage/images/img.png">
+    </div>
+</footer>
+</body>
+<script>
+    const content = document.getElementById('content');
+    async function LoadSeries() {
+        const response = await fetch("mainpage/getfilms");
+        const series = await response.json();
+        series.forEach(template => {
+            const card = document.createElement("form");
+            card.className = "content-serial";
+            card.method = "get";
+            card.innerHTML = template;
+            content.appendChild(card);
+        })
+    }
+    LoadSeries()
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterButtons = document.querySelectorAll('.filter-content-select');
+        const dropdowns = document.querySelectorAll('.filter-dropdown');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const filterType = this.getAttribute('data-filter');
+                const dropdown = document.querySelector(`.filter-dropdown[data-dropdown="${filterType}"]`);
+                dropdowns.forEach(drop => {
+                    if (drop != dropdown) {
+                        drop.classList.remove('active')
+                    }
+                })
+
+
+                dropdown.classList.toggle('active');
+
+            });
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!event.target.closest('.filter-container')) {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+    });
+</script>
+</html>

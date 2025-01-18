@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Premier</title>
+    <link rel="stylesheet" href="FilmPage/FilmPage.css">
+</head>
+<body>
+<header class = "header">
+    <div class = "header-content">
+        <a href="http://localhost:6529/mainpage"><img class="header-content-logo" src="FilmPage/images/LOGO_PREMIER.png"></a>
+        <button class="header-content-catalog">
+            Каталог</button>
+        <div class ="header-content-search"> Поиск</div>
+        <div class ="header-content-list">
+            <button class = "header-content-buttons">
+                Подписки
+            </button>
+            <button class = "header-content-buttons" >
+                ТВ-каналы
+            </button>
+            <button class = "header-content-buttons" >
+                Марафон
+            </button>
+            <button class = "header-content-buttons" >
+                Детям
+            </button>
+            <button class = "header-content-buttons" >
+                Бесплатно
+            </button>
+            <button class = "header-content-buttons" >
+                Избранное
+            </button>
+        </div>
+        <a href="login"> <button class = "header-content-auth" > Войти </button> </a>
+    </div>
+</header>
+<main class = "container">
+    <section class="main" id="main">
+        <img class="main-serial-logo" src="{{logo_url}}">
+        <img class="container-serial-image" src="{{poster_url}}">
+        <div class="gradient-horizontal"></div>
+        <div class="gradient-vertical"></div>
+        <div class="main-info">
+            <a class="main-info-year"> {{year}}</a>
+            <a class="main-info-genre"> {{genre}} </a>
+            <a class="main-info-country"> {{country}} </a>
+        </div>
+        <div class="main-buttons"> <button class="watch-button"> Смотреть </button> <button class="favorites-button-off"> Add </button> </div>
+        <p class="main-description">
+            {{description}}
+        </p>
+    </section>
+    <section class="episodes">
+        <h1 class="episodes-header">Серии</h1>
+        <section class="episodes-list" id="episodes-list">
+            
+        </section>
+    </section>
+    <section class="cast">
+        <h1 class="cast-header">Создатели и актёры</h1>
+        <div class="cast-items" id="cast-items">
+        </div>
+    </section>
+    <section class="information">
+        <h1 class="information-header">Информация о сериале</h1>
+        <h4 class="information-category">Сюжет</h4>
+        <p class="information-category-text">
+            {{description}}
+        </p>
+        <div class="information-blocks">
+            <div class="information-block">
+                <h4 class="information-category">Год выпуска</h4>
+                <p class="information-category-text">{{year}}</p>
+            </div>
+            <div class="information-block">
+                <h4 class="information-category">Жанр</h4>
+                <p class="information-category-text">{{genre}}</p>
+            </div>
+        </div>
+        <div class="information-blocks">
+            <div class="information-block">
+                <h4 class="information-category">Страна</h4>
+                <p class="information-category-text">{{country}}</p>
+            </div>
+            <div class="information-block">
+                <h4 class="information-category">Рейтинг</h4>
+                <p class="information-category-text">{{rating}}+</p>
+            </div>
+        </div>
+
+    </section>
+</main>
+<footer class = "footer">
+    <div class = "footer-items">
+        <ul class= "footer-section">
+            <li class = "footer-section-item" style="font-weight: bold" > Разделы</li>
+            <li class = "footer-section-item"> Подписки</li>
+            <li class = "footer-section-item"> ТВ-каналы</li>
+            <li class = "footer-section-item"> Марафон</li>
+            <li class = "footer-section-item"> Детям</li>
+            <li class = "footer-section-item"> Бесплатно</li>
+            <li class = "footer-section-item"> Избранное</li>
+        </ul>
+        <ul class= "footer-section">
+            <li class = "footer-section-item" style="font-weight: bold" > Информация</li>
+            <li class = "footer-section-item"> Пользовательское соглашение</li>
+            <li class = "footer-section-item"> Политика конфиденциальности</li>
+            <li class = "footer-section-item"> Частые вопросы</li>
+            <li class = "footer-section-item"> Акции и предложения</li>
+            <li class = "footer-section-item"> Купить сертификат</li>
+        </ul>
+        <img class="footer-image" src="FilmPage/images/img.png">
+    </div>
+</footer>
+</body>
+<script>
+    const main = document.getElementById("main");
+
+    async function LoadMainInfo() {
+        const response = await fetch(`filmpage/getmaininfo`);
+        const htmlArray = await response.json();
+        htmlArray.forEach((html) => {
+            const card = document.createElement("div");
+            card.insertAdjacentHTML('beforeend', html);
+            main.appendChild(card);
+        })
+    }
+
+    function getIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
+    }
+
+    const id = getIdFromUrl();
+    if (id) {
+        console.log("ID из URL:", id);
+    } else {
+        console.log("ID не найден в URL");
+    }
+
+    const castItem = document.getElementById("cast-items");
+
+
+    async function LoadPersonInfo(seriesId) {
+        const response = await fetch(`filmpage/getperson?id=${seriesId}`);
+        const htmlArray = await response.json();
+        htmlArray.forEach((html) => {
+            const card = document.createElement("div");
+            card.className = "cast-item";
+            card.insertAdjacentHTML('beforeend', html);
+            castItem.appendChild(card);
+        })
+    }
+
+    const episodesList = document.getElementById("episodes-list");
+
+    async function LoadEpisodesInfo(seriesId) {
+        const response = await fetch(`filmpage/getepisode?id=${seriesId}`);
+        const htmlArray = await response.json();
+        htmlArray.forEach((html) => {
+            const card = document.createElement("div");
+            card.className = "episodes-episode";
+            card.insertAdjacentHTML('beforeend', html);
+            episodesList.appendChild(card);
+        })
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const favoritesButton = document.querySelector('.favorites-button-on');
+        const favoritesIcon = document.getElementById('favorites-icon');
+        let isFavorite = false;
+
+        favoritesButton.addEventListener('click', function () {
+            isFavorite = !isFavorite;
+            if (isFavorite) {
+                favoritesIcon.src = 'FilmPage/images/favon.png';
+            } else {
+                favoritesIcon.src = 'FilmPage/images/favoff.png';
+            }
+        });
+    });
+
+    LoadMainInfo();
+    LoadPersonInfo(getIdFromUrl())
+    LoadEpisodesInfo(getIdFromUrl())
+   
+
+</script>
+</html>

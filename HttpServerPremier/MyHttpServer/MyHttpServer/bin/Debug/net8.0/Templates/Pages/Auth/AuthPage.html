@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Premier</title>
+    <link rel="stylesheet" href="AuthPage/AuthPage.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <img class="background-image" src="AuthPage/backimage.jpg">
+    <form class="auth-container" method="post" id="auth-form">
+        <h3 class="auth-container-header">Вход</h3>
+        <label class="auth-container-text" for="email">Введите почту</label>
+        <input name="email" class="auth-container-input" type="email" placeholder="Email" id="email">
+        <label class="auth-container-text" for="password">Введите пароль</label>
+        <input name="password" class="auth-container-input" type="password" placeholder="Password" id="password">
+        <button type="submit">Войти</button>
+    </form>
+    <script>
+                    const emailInput = document.getElementById('email');
+                    const emailError = document.getElementById('emailError');               
+
+                    const form = document.querySelector('form');
+
+                    form.addEventListener('submit', async (event) => {
+                        event.preventDefault();
+
+                        const email = document.getElementById('email').value;
+                        const password = document.getElementById('password').value;
+
+                        try
+                        {
+                            const response = await fetch('login', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: new URLSearchParams({
+                                    email: email,
+                                    password: password,
+                                }).toString(),
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success)
+                            {
+                                window.location.href = result.redirectUrl;
+                            }
+                            else
+                            {
+                                alert(result.message);
+                            }
+                        }
+
+                        catch (error)
+                        {
+                            alert('Произошла ошибка. Попробуйте позже.');
+                            console.error('Error:', error);
+                        }
+                    });
+
+    </script>
+</body>
+</html>
